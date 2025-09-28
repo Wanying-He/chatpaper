@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import papersRouter from './routes/papers';
 import annotationsRouter from './routes/annotations';
+import commentsRouter from './routes/comments';
+import aiRouter from './routes/ai';
 
 dotenv.config();
 
@@ -16,6 +18,8 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use('/api/papers', papersRouter);
 app.use('/api/annotations', annotationsRouter);
+app.use('/api/comments', commentsRouter);
+app.use('/api/ai', aiRouter);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'ChatPaper API is running' });
