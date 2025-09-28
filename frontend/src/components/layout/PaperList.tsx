@@ -34,23 +34,40 @@ const PaperList: React.FC = () => {
   };
 
   const handleUpload = async () => {
+    console.log('Upload button clicked'); // Debug log
     const file = fileInputRef.current?.files?.[0];
-    if (!file || !uploadTitle.trim()) return;
+    if (!file || !uploadTitle.trim()) {
+      console.log('Upload cancelled: missing file or title'); // Debug log
+      return;
+    }
 
+    console.log('Starting upload...', { filename: file.name, title: uploadTitle }); // Debug log
     setIsUploading(true);
     try {
       const response = await paperApi.uploadPaper(file, uploadTitle.trim());
+      console.log('Upload successful:', response); // Debug log
       addPaper(response.paper);
       setShowUploadForm(false);
       setUploadTitle('');
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+      // Reload papers to ensure the list is updated
+      await loadPapers();
     } catch (error) {
       console.error('Failed to upload paper:', error);
-      alert('Failed to upload paper. Please try again.');
+      alert(`Failed to upload paper: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    console.log('Cancel button clicked'); // Debug log
+    setShowUploadForm(false);
+    setUploadTitle('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
@@ -190,7 +207,7 @@ const PaperList: React.FC = () => {
                 {isUploading ? 'Uploading...' : 'Upload'}
               </button>
               <button
-                onClick={() => setShowUploadForm(false)}
+                onClick={handleCancel}
                 className="flex-1 bg-gray-500 text-white py-1 px-3 rounded-md hover:bg-gray-600"
               >
                 Cancel
